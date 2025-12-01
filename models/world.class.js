@@ -1,6 +1,7 @@
 class World {
     canvas;
     ctx;
+    keyboard;
 
     character = new Character();
     enemies = [
@@ -23,11 +24,17 @@ class World {
     ];
 
 
-    constructor(canvas) {
+    constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
+        this.keyboard = keyboard;
         this.draw();
+        this.setWorld();
 
+    }
+
+    setWorld() {
+        this.character.world = this;
     }
 
 
@@ -45,15 +52,33 @@ class World {
         });
     }
 
-
-    addToMap(MovableObject) {
-        this.ctx.drawImage(MovableObject.img, MovableObject.x, MovableObject.y, MovableObject.width, MovableObject.height);
-    }
-
     addObjectsToMap(objects) {
         objects.forEach(object => {
             this.addToMap(object);
         });
+    }
+
+    addToMap(movableObject) {
+        if (movableObject.otherDirection) {
+            this.flipImage(movableObject);
+        }
+        this.ctx.drawImage(movableObject.img, movableObject.x, movableObject.y, movableObject.width, movableObject.height);
+
+        if (movableObject.otherDirection) {
+            this.flipImageBack(movableObject);
+        }
+    }
+
+    flipImage(movableObject) {
+        this.ctx.save();
+        this.ctx.translate(movableObject.x + movableObject.width, 0);
+        this.ctx.scale(-1, 1);
+        movableObject.x = movableObject * -1;
+    }
+
+    flipImageBack(movableObject) {
+        this.ctx.restore();
+        movableObject.x = movableObject * -1;
     }
 
 }

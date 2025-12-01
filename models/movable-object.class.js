@@ -4,6 +4,12 @@ class MovableObject extends DrawableObject {
     img;
     height = 250;
     width = 120;
+    speed = 0.15;
+    speedY = 0;
+    acceleration = 2.5;
+    otherDirection = false;
+    energy = 100;
+    lastHit = 0;
 
     constructor(imgPath) {
         super();
@@ -15,7 +21,9 @@ class MovableObject extends DrawableObject {
     }
 
     moveLeft() {
-        console.log('move left');
+        setInterval(() => {
+            this.x -= this.speed;
+        }, 1000 / 60);
     }
 
     jump() {

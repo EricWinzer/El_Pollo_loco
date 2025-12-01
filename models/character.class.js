@@ -1,4 +1,7 @@
 class Character extends MovableObject {
+    world;
+    speed = 10;
+
     imagesIdle = [
         '../assets/img/2_character_pepe/1_idle/idle/I-1.png',
         '../assets/img/2_character_pepe/1_idle/idle/I-2.png',
@@ -25,15 +28,90 @@ class Character extends MovableObject {
         '../assets/img/2_character_pepe/1_idle/long_idle/I-20.png'
     ];
 
+    imagesWalking = [
+        '../assets/img/2_character_pepe/2_walk/W-21.png',
+        '../assets/img/2_character_pepe/2_walk/W-22.png',
+        '../assets/img/2_character_pepe/2_walk/W-23.png',
+        '../assets/img/2_character_pepe/2_walk/W-24.png',
+        '../assets/img/2_character_pepe/2_walk/W-25.png',
+        '../assets/img/2_character_pepe/2_walk/W-26.png'
+    ];
+
+    imagesJumping = [
+        '../assets/img/2_character_pepe/3_jump/J-31.png',
+        '../assets/img/2_character_pepe/3_jump/J-32.png',
+        '../assets/img/2_character_pepe/3_jump/J-33.png',
+        '../assets/img/2_character_pepe/3_jump/J-34.png',
+        '../assets/img/2_character_pepe/3_jump/J-35.png',
+        '../assets/img/2_character_pepe/3_jump/J-36.png',
+        '../assets/img/2_character_pepe/3_jump/J-37.png',
+        '../assets/img/2_character_pepe/3_jump/J-38.png',
+        '../assets/img/2_character_pepe/3_jump/J-39.png'
+    ];
+
+    imagesHurt = [
+        '../assets/img/2_character_pepe/4_hurt/H-41.png',
+        '../assets/img/2_character_pepe/4_hurt/H-42.png',
+        '../assets/img/2_character_pepe/4_hurt/H-43.png'
+    ];
+
+    imagesDead = [
+        '../assets/img/2_character_pepe/5_dead/D-51.png',
+        '../assets/img/2_character_pepe/5_dead/D-52.png',
+        '../assets/img/2_character_pepe/5_dead/D-53.png',
+        '../assets/img/2_character_pepe/5_dead/D-54.png',
+        '../assets/img/2_character_pepe/5_dead/D-55.png',
+        '../assets/img/2_character_pepe/5_dead/D-56.png',
+        '../assets/img/2_character_pepe/5_dead/D-57.png'
+    ];
 
     constructor() {
         super();
         this.loadImage('../assets/img/2_character_pepe/1_idle/idle/I-1.png');
+        this.loadImages(this.imagesIdle);
+        this.loadImages(this.imagesLongIdle);
+        this.loadImages(this.imagesWalking);
+        this.loadImages(this.imagesJumping);
+        this.loadImages(this.imagesHurt);
+        this.loadImages(this.imagesDead);
+        this.animate();
 
     }
 
 
+    animate() {
+        setInterval(() => {
+            if (this.world.keyboard.right && this.x < 2000) {
+                this.x += this.speed;
+                this.otherDirection = false;
+            }
+            if (this.world.keyboard.left && this.x > 0) {
+                this.x -= this.speed;
+                this.otherDirection = true;
+            }
 
+        }, 1000 / 60);
+
+        setInterval(() => {
+            //FIXME - Character dreht sich nicht nach links beim Zurücklaufen
+            //FIXME - Nach dem Flip ist die X-Koordinate NaN
+            if (this.world.keyboard.right || this.world.keyboard.left) {
+                let i = this.currentImage % this.imagesWalking.length;
+                let path = this.imagesWalking[i];
+                this.img = this.imageCache[path];
+                this.currentImage++;
+            }
+
+            if (this.world.keyboard.up) {
+                let i = this.currentImage % this.imagesJumping.length;
+                let path = this.imagesJumping[i];
+                this.img = this.imageCache[path];
+                this.currentImage++;
+            }
+
+
+        }, 100);
+    }
 
 
 }
