@@ -2,27 +2,10 @@ class World {
     canvas;
     ctx;
     keyboard;
+    camera_x = 0;
 
     character = new Character();
-    enemies = [
-        new Chicken(),
-        new Chicken(),
-        new Chicken()
-
-    ];
-
-    clouds = [
-        new Cloud('../assets/img/5_background/layers/4_clouds/1.png'),
-        new Cloud('../assets/img/5_background/layers/4_clouds/2.png', 350)
-    ];
-
-    backgroundObjects = [
-        new BackgroundObject('../assets/img/5_background/layers/air.png'),
-        new BackgroundObject('../assets/img/5_background/layers/3_third_layer/1.png'),
-        new BackgroundObject('../assets/img/5_background/layers/2_second_layer/1.png'),
-        new BackgroundObject('../assets/img/5_background/layers/1_first_layer/1.png')
-    ];
-
+    level = level1;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -41,10 +24,14 @@ class World {
     draw() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        this.addObjectsToMap(this.backgroundObjects);
-        this.addObjectsToMap(this.enemies);
-        this.addObjectsToMap(this.clouds);
+        this.ctx.translate(this.camera_x, 0);
+
+        this.addObjectsToMap(this.level.backgroundObjects);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
+
+        this.ctx.translate(-this.camera_x, 0);
 
         self = this;
         requestAnimationFrame(function () {
