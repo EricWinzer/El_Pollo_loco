@@ -93,8 +93,6 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
-            //FIXME - Character dreht sich nicht nach links beim Zurücklaufen
-            //FIXME - Nach dem Flip ist die X-Koordinate NaN
             if (this.world.keyboard.right || this.world.keyboard.left) {
                 let i = this.currentImage % this.imagesWalking.length;
                 let path = this.imagesWalking[i];

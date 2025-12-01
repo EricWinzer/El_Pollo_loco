@@ -61,11 +61,10 @@ class World {
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
             this.flipImage(movableObject);
-        }
-        this.ctx.drawImage(movableObject.img, movableObject.x, movableObject.y, movableObject.width, movableObject.height);
-
-        if (movableObject.otherDirection) {
+            this.ctx.drawImage(movableObject.img, 0, movableObject.y, movableObject.width, movableObject.height);
             this.flipImageBack(movableObject);
+        } else {
+            this.ctx.drawImage(movableObject.img, movableObject.x, movableObject.y, movableObject.width, movableObject.height);
         }
     }
 
@@ -73,12 +72,10 @@ class World {
         this.ctx.save();
         this.ctx.translate(movableObject.x + movableObject.width, 0);
         this.ctx.scale(-1, 1);
-        movableObject.x = movableObject * -1;
     }
 
     flipImageBack(movableObject) {
         this.ctx.restore();
-        movableObject.x = movableObject * -1;
     }
 
 }
