@@ -67,15 +67,17 @@ class Character extends MovableObject {
 
     constructor() {
         super();
-        this.loadImage('../assets/img/2_character_pepe/1_idle/idle/I-1.png');
+        this.loadImage(this.imagesIdle[0]);
         this.loadImages(this.imagesIdle);
         this.loadImages(this.imagesLongIdle);
         this.loadImages(this.imagesWalking);
         this.loadImages(this.imagesJumping);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
-        this.animate();
+    }
 
+    initAnimation() {
+        this.animate();
     }
 
 
@@ -94,10 +96,7 @@ class Character extends MovableObject {
 
         setInterval(() => {
             if (this.world.keyboard.right || this.world.keyboard.left) {
-                let i = this.currentImage % this.imagesWalking.length;
-                let path = this.imagesWalking[i];
-                this.img = this.imageCache[path];
-                this.currentImage++;
+                this.playAnimation(this.imagesWalking);
             }
 
             if (this.world.keyboard.up) {

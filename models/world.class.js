@@ -18,6 +18,14 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        this.character.initAnimation();
+
+        this.level.enemies.forEach(enemy => {
+            enemy.world = this;
+            if (enemy.initEndboss) {
+                enemy.initEndboss();
+            }
+        });
     }
 
 
