@@ -1,6 +1,8 @@
 class Character extends MovableObject {
     world;
     speed = 10;
+    idleTime = 0;
+
 
     imagesIdle = [
         '../assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -74,6 +76,7 @@ class Character extends MovableObject {
         this.loadImages(this.imagesJumping);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
+        this.applyGravity();
     }
 
     initAnimation() {
@@ -83,27 +86,40 @@ class Character extends MovableObject {
 
     animate() {
         setInterval(() => {
+            //FIXME -  this.walking_sound.pause();
             if (this.world.keyboard.right && this.x < this.world.level.level_end_x) {
-                this.x += this.speed;
+                this.moveRight();
                 this.otherDirection = false;
+                //FIXME - this.walking_sound.play();
             }
             if (this.world.keyboard.left && this.x > 100) {
-                this.x -= this.speed;
+                this.moveLeft();
                 this.otherDirection = true;
+                //FIXME - this.walking_sound.play();
             }
+
+            if (this.world.keyboard.space && !this.isAboveGround()) {
+                this.jump();
+            }
+
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
         setInterval(() => {
-            if (this.world.keyboard.right || this.world.keyboard.left) {
+            if (this.isDead()) {
+                this.playAnimation(this.imagesDead);
+            } else if (this.isHurt()) {
+                this.playAnimation(this.imagesHurt);
+            } else if (this.isAboveGround()) {
+                this.playAnimation(this.imagesJumping);
+            } else if (this.world.keyboard.right || this.world.keyboard.left) {
                 this.playAnimation(this.imagesWalking);
-            }
-
-            if (this.world.keyboard.up) {
-                let i = this.currentImage % this.imagesJumping.length;
-                let path = this.imagesJumping[i];
-                this.img = this.imageCache[path];
-                this.currentImage++;
+            } else if (this.world.keyboard.space) {
+                this.playAnimation(this.imagesJumping);
+            } else if (this.isLongIdle(this.idleTime)) {
+                this.playAnimation(this.imagesLongIdle);
+            } else {
+                this.playAnimation(this.imagesIdle);
             }
 
 
