@@ -1,7 +1,13 @@
 class DrawableObject {
     intervalIDs;
+    img;
     currentImage = 0;
     imageCache = {};
+    x = 180;
+    y = 190;
+    height = 250;
+    width = 120;
+
 
     loadImage(path) {
         this.img = new Image();

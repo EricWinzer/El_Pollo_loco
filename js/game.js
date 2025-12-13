@@ -6,10 +6,6 @@ function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
 
-
-
-
-
     function fullscreen() {
         let fullscreen = document.getElementById('fullscreen');
         if (!document.fullscreenElement) {

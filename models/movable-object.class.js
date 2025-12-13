@@ -1,9 +1,4 @@
 class MovableObject extends DrawableObject {
-    x = 180;
-    y = 190;
-    img;
-    height = 250;
-    width = 120;
     speed = 0.15;
     speedY = 0;
     acceleration = 2.5;
@@ -24,6 +19,8 @@ class MovableObject extends DrawableObject {
             }
         }, 1000 / 25);
     }
+
+
 
     isAboveGround() {
         return this.y < 190;

@@ -1,6 +1,6 @@
 class Cloud extends MovableObject {
 
-    y = 0;
+    y = 80;
     height = 250;
     width = 360;
 

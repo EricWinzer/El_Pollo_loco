@@ -4,12 +4,12 @@
 }
 
 @font-face {
-    font-family: 'Luckiest_Guy';
-    src: url(./assets/font/Luckiest_Guy/LuckiestGuy-Regular.ttf);
+    font-family: 'Boogaloo';
+    src: url(./assets/font/boogaloo/Boogaloo-Regular.ttf);
 }
 
 * {
-    font-family: 'Luckiest_Guy';
+    font-family: 'Boogaloo';
     box-sizing: border-box;
 
 }
