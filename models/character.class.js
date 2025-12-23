@@ -1,8 +1,12 @@
 class Character extends MovableObject {
+
+    x = 180;
+    y = 220;
+
     world;
     speed = 10;
     idleTime = 0;
-
+    lastThrowTime = 0;
 
     imagesIdle = [
         '../assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -69,6 +73,7 @@ class Character extends MovableObject {
 
     constructor() {
         super();
+        this.idleTime = new Date().getTime();
         this.loadImage(this.imagesIdle[0]);
         this.loadImages(this.imagesIdle);
         this.loadImages(this.imagesLongIdle);
@@ -102,7 +107,23 @@ class Character extends MovableObject {
                 this.jump();
             }
 
+            if (this.world.keyboard.throw && this.bottles > 0 && new Date().getTime() - this.lastThrowTime > 500) {
+                this.lastThrowTime = new Date().getTime();
+                this.bottles--;
+                this.world.statusbarBottle.setPercentage(this.bottles);
+                let bottle = new ThrowableObject();
+                bottle.world = this.world;
+                let startX = this.otherDirection ? this.x - 20 : this.x + 50;
+                let startY = this.y + 50;
+                bottle.throw(startX, startY);
+                this.world.flyingSalsaBottle.push(bottle);
+            }
+
             this.world.camera_x = -this.x + 100;
+            // update idleTime when character is active so long-idle can be detected
+            if (this.world.keyboard.right || this.world.keyboard.left || this.world.keyboard.space || this.world.keyboard.throw || this.isAboveGround()) {
+                this.idleTime = new Date().getTime();
+            }
         }, 1000 / 60);
 
         setInterval(() => {
@@ -122,7 +143,6 @@ class Character extends MovableObject {
             } else {
                 this.playAnimation(this.imagesIdle);
             }
-
 
         }, 100);
     }

@@ -5,6 +5,8 @@ class MovableObject extends DrawableObject {
     otherDirection = false;
     energy = 100;
     lastHit = 0;
+    coins = 0;
+    bottles = 0;
 
     constructor(imgPath) {
         super();
@@ -23,8 +25,13 @@ class MovableObject extends DrawableObject {
 
 
     isAboveGround() {
-        return this.y < 190;
+        if (this instanceof ThrowableObject) {
+            return true;
+        } else {
+            return this.y < 220;
+        }
     }
+
 
     moveRight() {
         this.x += this.speed;
@@ -37,6 +44,34 @@ class MovableObject extends DrawableObject {
     jump() {
         this.speedY = 30;
     }
+
+    throw(x, y) {
+        this.x = x;
+        this.y = y;
+        this.speedY = 10;
+        this.applyGravity();
+        setInterval(() => {
+            this.x += 10;
+        }, 25);
+    }
+
+    collecting(itemCollected) {
+        if (!itemCollected) return;
+        const ctor = itemCollected.constructor ? itemCollected.constructor.name : null;
+        if (ctor === 'Coin') {
+            this.coins++;
+        } else if (ctor === 'Bottle') {
+            this.bottles++;
+        }
+    }
+
+    throwObject() {
+        this.bottles--;
+        if (this.bottles < 0) {
+            this.bottles = 0;
+        }
+    }
+
 
     hit() {
         this.energy -= 5;
@@ -57,7 +92,7 @@ class MovableObject extends DrawableObject {
 
     isLongIdle(idleTime) {
         let idleTimePassed = new Date().getTime() - idleTime;
-        return idleTimePassed > 1000;
+        return idleTimePassed > 2000;
     }
 
     isColliding(movableObject) {
@@ -66,14 +101,6 @@ class MovableObject extends DrawableObject {
             this.x < movableObject.x + movableObject.width &&
             this.y < movableObject.y + movableObject.height;
     }
-
-    playAnimation(images) {
-        let i = this.currentImage % images.length;
-        let path = images[i];
-        this.img = this.imageCache[path];
-        this.currentImage++;
-    }
-
 
     setStoppableInterval(func, time) {
         let id = setInterval(func, time);

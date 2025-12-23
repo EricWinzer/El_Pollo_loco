@@ -7,6 +7,7 @@ class World {
     statusbarHealth = new StatusbarHealth();
     statusbarCoin = new StatusbarCoin();
     statusbarBottle = new StatusbarBottle();
+    flyingSalsaBottle = [];
     level = level1;
 
     constructor(canvas, keyboard) {
@@ -15,12 +16,16 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        this.checkCollisions();
+        this.runTheAction();
     }
 
     setWorld() {
         this.character.world = this;
         this.character.initAnimation();
+
+        this.flyingSalsaBottle.forEach(bottle => {
+            bottle.world = this;
+        });
 
         this.level.enemies.forEach(enemy => {
             enemy.world = this;
@@ -30,16 +35,71 @@ class World {
         });
     }
 
-    checkCollisions() {
+    runTheAction() {
         setInterval(() => {
-            this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
-                    this.character.hit();
-                    this.statusbarHealth.setPercentage(this.character.energy);
-                };
-            });
+            this.checkCollisionsCharacterWithEnemies();
+            this.checkCollectingCoins();
+            this.checkCollectiongBottles();
+            this.checkCollisionsBottleWithEnemies();
         }, 200);
+    }
 
+
+    checkCollisionsCharacterWithEnemies() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusbarHealth.setPercentage(this.character.energy);
+            }
+        });
+    }
+
+    checkCollectingCoins() {
+        this.level.coins.forEach((coin) => {
+            if (this.character.isColliding(coin) && !coin.collected) {
+                // start coin collect animation
+                if (coin.collect) coin.collect();
+                // increment player's coin count immediately
+                this.character.collecting(coin);
+                this.statusbarCoin.setPercentage(this.character.coins);
+
+                // remove coin from level after animation completes
+                setTimeout(() => {
+                    const idx = this.level.coins.indexOf(coin);
+                    if (idx > -1) this.level.coins.splice(idx, 1);
+                }, 700);
+            }
+        });
+    }
+
+    checkCollectiongBottles() {
+        this.level.bottles.forEach((bottle) => {
+            if (this.character.isColliding(bottle) && !bottle.collected) {
+                // start bottle collect animation if available
+                if (bottle.collect) bottle.collect();
+                // increment player's bottle count immediately
+                this.character.collecting(bottle);
+                this.statusbarBottle.setPercentage(this.character.bottles);
+
+                // remove bottle from level after animation completes
+                setTimeout(() => {
+                    const idx = this.level.bottles.indexOf(bottle);
+                    if (idx > -1) this.level.bottles.splice(idx, 1);
+                }, 700);
+            }
+        });
+    }
+
+    checkCollisionsBottleWithEnemies() {
+        this.level.enemies.forEach((enemy) => {
+            this.flyingSalsaBottle.forEach((bottle, index) => {
+                if (bottle.isColliding(enemy)) {
+                    this.flyingSalsaBottle.splice(index, 1);
+                    if (enemy.hit) enemy.hit();
+                    this.statusbarBottle.setPercentage(this.character.bottles);
+                }
+            });
+        });
     }
 
     draw() {
@@ -51,6 +111,8 @@ class World {
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.coins);
+        this.addObjectsToMap(this.level.bottles);
+        this.addObjectsToMap(this.flyingSalsaBottle);
         this.fixPlaceForStatusBar();
         this.addToMap(this.character);
 

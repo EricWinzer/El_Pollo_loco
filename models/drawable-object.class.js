@@ -3,11 +3,11 @@ class DrawableObject {
     img;
     currentImage = 0;
     imageCache = {};
-    x = 180;
-    y = 190;
-    height = 250;
-    width = 120;
-
+    height = 220;
+    width = 100;
+    groundZero = 440; // y position on ground
+    collected = false;
+    intervalIDs = [];
 
     loadImage(path) {
         this.img = new Image();
@@ -21,6 +21,15 @@ class DrawableObject {
             this.imageCache[path] = img;
         });
     }
+
+    playAnimation(images) {
+        let i = this.currentImage % images.length;
+        let path = images[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }
+
+
 
 
     drawMovableObject(ctx) {
