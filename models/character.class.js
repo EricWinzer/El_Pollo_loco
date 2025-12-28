@@ -124,6 +124,7 @@ class Character extends MovableObject {
             if (this.world.keyboard.right || this.world.keyboard.left || this.world.keyboard.space || this.world.keyboard.throw || this.isAboveGround()) {
                 this.idleTime = new Date().getTime();
             }
+            console.log(this.x);
         }, 1000 / 60);
 
         setInterval(() => {

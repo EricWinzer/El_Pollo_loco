@@ -1,8 +1,20 @@
 const level1 = new Level(
     [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
+        new Chicken(200, 400),
+        new Chicken(300, 400),
+        new Chicken(400, 400),
+        new Chicken(800, 400),
+        new Chicken(900, 400),
+        new Chicken(1000, 400),
+        new Chicken(1400, 400),
+        new Chicken(1500, 400),
+        new Chicken(1600, 400),
+        new Chicken(1800, 400),
+        new Chicken(1900, 400),
+        new Chicken(2000, 400),
+        new Chicken(2200, 400),
+        new Chicken(2300, 400),
+        new Chicken(2400, 400),
         new Endboss()
     ],
     [

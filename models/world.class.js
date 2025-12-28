@@ -7,6 +7,7 @@ class World {
     statusbarHealth = new StatusbarHealth();
     statusbarCoin = new StatusbarCoin();
     statusbarBottle = new StatusbarBottle();
+    statusbarEndboss = new StatusbarEndbossHealth();
     flyingSalsaBottle = [];
     level = level1;
 
@@ -39,8 +40,9 @@ class World {
         setInterval(() => {
             this.checkCollisionsCharacterWithEnemies();
             this.checkCollectingCoins();
-            this.checkCollectiongBottles();
+            this.checkCollectingBottles();
             this.checkCollisionsBottleWithEnemies();
+            this.checkThrownBottlesHitGround();
         }, 200);
     }
 
@@ -72,7 +74,7 @@ class World {
         });
     }
 
-    checkCollectiongBottles() {
+    checkCollectingBottles() {
         this.level.bottles.forEach((bottle) => {
             if (this.character.isColliding(bottle) && !bottle.collected) {
                 // start bottle collect animation if available
@@ -93,12 +95,50 @@ class World {
     checkCollisionsBottleWithEnemies() {
         this.level.enemies.forEach((enemy) => {
             this.flyingSalsaBottle.forEach((bottle, index) => {
-                if (bottle.isColliding(enemy)) {
-                    this.flyingSalsaBottle.splice(index, 1);
+                if (bottle.isColliding(enemy) && !bottle.exploded) {
+                    bottle.exploded = true;
+                    // animate explosion frames repeatedly
+                    if (bottle.imagesExploding) {
+                        bottle.setStoppableInterval(() => bottle.playAnimation(bottle.imagesExploding), 100);
+                    }
+
+                    // remove bottle after short delay so explosion frames are visible
+                    setTimeout(() => {
+                        const idx = this.flyingSalsaBottle.indexOf(bottle);
+                        if (idx > -1) this.flyingSalsaBottle.splice(idx, 1);
+                    }, 400);
+
                     if (enemy.hit) enemy.hit();
                     this.statusbarBottle.setPercentage(this.character.bottles);
                 }
             });
+        });
+    }
+
+    checkThrownBottlesHitGround() {
+        this.flyingSalsaBottle.forEach((bottle) => {
+            // For ThrowableObject, isAboveGround() returns true, so check y position against ground
+            const groundY = bottle.groundZero - bottle.height;
+            const onOrBelowGround = bottle.y >= groundY - 2;
+            // ensure bottle is falling (negative speedY) to avoid triggering immediately after throw
+            const falling = typeof bottle.speedY !== 'undefined' ? bottle.speedY < 0 : true;
+            if (!bottle.exploded && onOrBelowGround && falling) {
+                bottle.exploded = true;
+                // snap to ground and stop vertical movement
+                bottle.y = groundY;
+                bottle.speedY = 0;
+
+                if (bottle.imagesExploding) {
+                    // play first frame immediately, then animate
+                    bottle.playAnimation(bottle.imagesExploding);
+                    bottle.setStoppableInterval(() => bottle.playAnimation(bottle.imagesExploding), 100);
+                }
+
+                setTimeout(() => {
+                    const idx = this.flyingSalsaBottle.indexOf(bottle);
+                    if (idx > -1) this.flyingSalsaBottle.splice(idx, 1);
+                }, 500);
+            }
         });
     }
 

@@ -1,47 +1,30 @@
 class StatusbarCoin extends DrawableObject {
-    x = 500;
-    y = 0;
-    height = 60;
-    width = 200;
+    x = 10;
+    y = 60;
+    height = 50;
+    width = 50;
     percentage = 0;
-
-    images = [
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png',
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/20.png',
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/40.png',
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/60.png',
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/80.png',
-        '../assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/100.png'
-    ];
 
 
     constructor() {
         super();
-        this.loadImage(this.images[0]);
-        this.loadImages(this.images);
+        this.loadImage('../assets/img/7_statusbars/3_icons/icon_coin.png');
     }
 
     setPercentage(percentage) {
         this.percentage = percentage;
-        let path = this.images[this.resolveImageIndex()];
-        this.img = this.imageCache[path];
     }
 
-    resolveImageIndex() {
-        if (this.percentage >= 80) {
-            return 5;
-        } else if (this.percentage >= 60) {
-            return 4;
-        } else if (this.percentage >= 40) {
-            return 3;
-        } else if (this.percentage >= 20) {
-            return 2;
-        } else if (this.percentage > 0) {
-            return 1;
-        } else {
-            return 0;
+    drawMovableObject(ctx) {
+        // draw icon
+        if (this.img) {
+            ctx.drawImage(this.img, this.x + 10, this.y + 10, this.width, this.height);
         }
-
+        // draw number next to icon
+        ctx.fillStyle = 'black';
+        ctx.font = '40px Boogaloo';
+        ctx.textAlign = 'left';
+        ctx.fillText(this.percentage.toString(), this.x + this.width + 10, this.y + this.height);
     }
 
 

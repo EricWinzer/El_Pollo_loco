@@ -33,3 +33,19 @@ function init() {
         }
     }
 }
+
+function startupScreen() {
+
+
+}
+
+
+function toggleDNone(id) {
+    document.getElementById(id).classList.toggle('d_none')
+};
+
+function stopGame() {
+    this.intervalIDs.forEach(id => clearInterval(id));
+}
+
+

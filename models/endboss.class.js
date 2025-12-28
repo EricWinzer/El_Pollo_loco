@@ -31,6 +31,7 @@ class Endboss extends MovableObject {
 
     initEndboss() {
         this.x = this.world.level.level_end_x - this.width;
+        console.log('Endboss x-position: ' + this.x);
         this.animate();
     }
 

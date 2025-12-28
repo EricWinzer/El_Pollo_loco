@@ -50,7 +50,7 @@ class MovableObject extends DrawableObject {
         this.y = y;
         this.speedY = 10;
         this.applyGravity();
-        setInterval(() => {
+        this.setStoppableInterval(() => {
             this.x += 10;
         }, 25);
     }
@@ -65,7 +65,7 @@ class MovableObject extends DrawableObject {
         }
     }
 
-    throwObject() {
+    countingThrownObject() {
         this.bottles--;
         if (this.bottles < 0) {
             this.bottles = 0;

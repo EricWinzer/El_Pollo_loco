@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" translate="no">
 
 <head>
     <meta charset="UTF-8">
@@ -12,8 +12,33 @@
 
 <body onload='init()'>
     <h1>El Pollo loco</h1>
+    <div id="left">
+        <h2>Aktionkeys:</h2>
+        <ul>
+            <li>A or Left Arrow - Move Left</li>
+            <li>D or Right Arrow - Move Right</li>
+            <li>Space or Up Arrow - Jump</li>
+            <li>S - throw bottle</li>
+        </ul>
+    </div>
     <canvas id="canvas" height="480" width="720"></canvas>
+    <div id="right">
+        <h2>Playnotes:</h2>
+        <ul>
+            <li>Kill adult chickens by jumping on them or throw bottles at them</li>
+            <li>Kill the biddies only by throwing bottles at them</li>
+            <li>Kill the Endboss by throwing bottles at him</li>
+            <li>Collect coins and bottles to increase your score and ammo</li>
+            <li>Avoid getting hit by chickens, biddies and the Endboss</li>
+
+        </ul>
+    </div>
     <button onclick="stopGame()">Stop Game</button>
+    Bild von <a
+        href="https://pixabay.com/de/users/sketch1999-15613978/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5385998">Eduardo
+        Lora</a> auf <a
+        href="https://pixabay.com/de//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5385998">Pixabay</a>
+
 </body>
 
 <script src="./models/drawable-object.class.js"></script>
@@ -32,6 +57,7 @@
 <script src="./models/statusbar-health.class.js"></script>
 <script src="./models/statusbar-coin.class.js"></script>
 <script src="./models/statusbar-bottle.class.js"></script>
+<script src="./models/statusbar-endboss-health.class.js"></script>
 <script src="./models/level.class.js"></script>
 <script src="./js/levels/level1.js"></script>
 

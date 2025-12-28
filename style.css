@@ -8,21 +8,77 @@
     src: url(./assets/font/boogaloo/Boogaloo-Regular.ttf);
 }
 
+@font-face {
+    font-family: 'Zabars';
+    src: url(./assets/font/zabars/Zabars.ttf);
+}
+
 * {
-    font-family: 'Boogaloo';
+    font-family: 'Zabars';
     box-sizing: border-box;
-    cursor: pointer;
 
 }
 
 body {
+    background-image: url('../assets/img/desert.png');
     display: grid;
     place-items: center;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        'header header header'
+        'left canvas right'
+        'footer footer footer';
 }
 
+.left {
+    grid-area: left;
+}
+
+.right {
+    grid-area: right;
+}
+
+h1 {
+    grid-area: header;
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 3rem;
+}
+
+ul {
+    font-size: 2rem;
+}
+
+button {
+    grid-area: footer;
+    font-size: 3rem;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.startup {
+    background-image: url('./assets/img/9_intro_outro_screens/start/startscreen_2.png');
+}
+
+.d_none {
+    display: none;
+}
+
+
 canvas {
+    grid-area: canvas;
     background-color: black;
     display: block;
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 720px) {
@@ -36,7 +92,9 @@ canvas {
         height: 100vh;
     }
 
-    h1 {
+    h1,
+    h2,
+    button {
         display: none;
     }
 }
