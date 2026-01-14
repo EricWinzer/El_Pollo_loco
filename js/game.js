@@ -3,6 +3,10 @@ let world;
 let keyboard = new Keyboard();
 
 function init() {
+    // clear any leftover interval IDs from previous runs
+    if (sessionStorage.getItem('intervalIDs')) {
+        sessionStorage.removeItem('intervalIDs');
+    }
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
 
@@ -45,7 +49,6 @@ function toggleDNone(id) {
 };
 
 function stopGame() {
-    this.intervalIDs.forEach(id => clearInterval(id));
+    intervalIDs.forEach(id => clearInterval(id));
 }
-
 

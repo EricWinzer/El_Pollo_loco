@@ -1,45 +1,40 @@
 class MovableObject extends DrawableObject {
-    speed = 0.15;
+    speedX = 0.15;
     speedY = 0;
     acceleration = 2.5;
+    gravity = true;
+    gravityStarted = false;
+
     otherDirection = false;
+
     energy = 100;
     lastHit = 0;
     coins = 0;
     bottles = 0;
+    standardSpeedX;;
 
     constructor(imgPath) {
         super();
         this.img = new Image(imgPath);
     }
 
-    applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-            }
-        }, 1000 / 25);
-    }
-
-
-
-    isAboveGround() {
-        if (this instanceof ThrowableObject) {
-            return true;
-        } else {
-            return this.y < 220;
+    applyGravity(intervalTime) {
+        if (!this.gravity) return;
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY * intervalTime * 0.01;
+            this.speedY -= this.acceleration * intervalTime * 0.01;
         }
     }
 
-
-    moveRight() {
-        this.x += this.speed;
+    update(intervalTime) {
+        this.applyGravity(intervalTime);
+        this.x += this.speedX * intervalTime * 0.05;
     }
 
-    moveLeft() {
-        this.x -= this.speed;
+    isAboveGround() {
+        return this.y < this.groundZero - this.height;
     }
+
 
     jump() {
         this.speedY = 30;
@@ -49,10 +44,8 @@ class MovableObject extends DrawableObject {
         this.x = x;
         this.y = y;
         this.speedY = 10;
-        this.applyGravity();
-        this.setStoppableInterval(() => {
-            this.x += 10;
-        }, 25);
+        this.applyGravity(100);
+        this.x += 10;
     }
 
     collecting(itemCollected) {
@@ -61,7 +54,7 @@ class MovableObject extends DrawableObject {
         if (ctor === 'Coin') {
             this.coins++;
         } else if (ctor === 'Bottle') {
-            this.bottles++;
+            this.bottles += 10;
         }
     }
 
@@ -74,15 +67,13 @@ class MovableObject extends DrawableObject {
 
 
     hit() {
-        this.energy -= 5;
-        if (this.energy < 0) {
-            this.energy = 0;
+        if (this.character.isColliding(enemy) && !this.character.isHurt()) {
+            this.character.hit();
         }
-        this.lastHit = new Date().getTime();
     }
 
     isHurt() {
-        let timePassed = new Date().getTime() - this.lastHit;
+        let timePassed = Date.now() - this.lastHit;
         return timePassed < 1000;
     }
 
@@ -91,7 +82,7 @@ class MovableObject extends DrawableObject {
     }
 
     isLongIdle(idleTime) {
-        let idleTimePassed = new Date().getTime() - idleTime;
+        let idleTimePassed = Date.now() - idleTime;
         return idleTimePassed > 2000;
     }
 
@@ -102,10 +93,13 @@ class MovableObject extends DrawableObject {
             this.y < movableObject.y + movableObject.height;
     }
 
-    setStoppableInterval(func, time) {
-        let id = setInterval(func, time);
-        this.intervalIDs.push(id);
-        return id;
+    isFallingOnEnemy(movableObject) {
+        return this.speedY < 0 && (this.y + this.height <= movableObject.y + movableObject.height / 2);
+
+    }
+
+    isEndboss() {
+        return this instanceof Endboss;
     }
 
 }

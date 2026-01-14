@@ -3,6 +3,9 @@ class Coin extends DrawableObject {
     height = 80;
     width = 80;
 
+    collected = false;
+    intervalIDs = [];
+
     images = [
         '../assets/img/8_coin/coin_1.png',
         '../assets/img/8_coin/coin_2.png'

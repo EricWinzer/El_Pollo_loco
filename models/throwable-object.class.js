@@ -3,7 +3,10 @@ class ThrowableObject extends MovableObject {
     y = 200;
     width = 75;
     height = 75;
-    acceleration = 0.5;
+    acceleration = 1.0;
+    exploded = false;
+    explosionTimer = 0;
+
 
     imagesRotating = [
         '../assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -28,5 +31,31 @@ class ThrowableObject extends MovableObject {
         this.loadImages(this.imagesExploding);
     }
 
+    update(intervalTime) {
+        if (this.exploded) {
+            this.animateExplosion(intervalTime);
+            return;
+        }
 
+        super.update(intervalTime);
+
+        if (this.isAboveGround()) {
+            this.explode();
+        }
+    }
+
+    explode() {
+        this.exploded = true;
+        this.speedX = 0;
+        this.speedY = 0;
+        this.currentImage = 0;
+    }
+
+    animateExplosion(intervalTime) {
+        this.explosionTimer += intervalTime;
+        if (this.explosionTimer > 80) {
+            this.playAnimation(this.imagesExploding);
+            this.explosionTimer = 0;
+        }
+    }
 }

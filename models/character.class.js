@@ -4,9 +4,10 @@ class Character extends MovableObject {
     y = 220;
 
     world;
-    speed = 10;
+    standardSpeedX = 10;
     idleTime = 0;
     lastThrowTime = 0;
+    animationTimer = 0;
 
     imagesIdle = [
         '../assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -73,7 +74,10 @@ class Character extends MovableObject {
 
     constructor() {
         super();
-        this.idleTime = new Date().getTime();
+        this.energy = 100;
+        this.speedX = 0;
+        this.speedY = 0;
+        this.idleTime = Date.now();
         this.loadImage(this.imagesIdle[0]);
         this.loadImages(this.imagesIdle);
         this.loadImages(this.imagesLongIdle);
@@ -81,72 +85,77 @@ class Character extends MovableObject {
         this.loadImages(this.imagesJumping);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
-        this.applyGravity();
-    }
-
-    initAnimation() {
-        this.animate();
     }
 
 
-    animate() {
-        setInterval(() => {
-            //FIXME -  this.walking_sound.pause();
-            if (this.world.keyboard.right && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.otherDirection = false;
-                //FIXME - this.walking_sound.play();
-            }
-            if (this.world.keyboard.left && this.x > 100) {
-                this.moveLeft();
-                this.otherDirection = true;
-                //FIXME - this.walking_sound.play();
-            }
-
-            if (this.world.keyboard.space && !this.isAboveGround()) {
-                this.jump();
-            }
-
-            if (this.world.keyboard.throw && this.bottles > 0 && new Date().getTime() - this.lastThrowTime > 500) {
-                this.lastThrowTime = new Date().getTime();
-                this.bottles--;
-                this.world.statusbarBottle.setPercentage(this.bottles);
-                let bottle = new ThrowableObject();
-                bottle.world = this.world;
-                let startX = this.otherDirection ? this.x - 20 : this.x + 50;
-                let startY = this.y + 50;
-                bottle.throw(startX, startY);
-                this.world.flyingSalsaBottle.push(bottle);
-            }
-
-            this.world.camera_x = -this.x + 100;
-            // update idleTime when character is active so long-idle can be detected
-            if (this.world.keyboard.right || this.world.keyboard.left || this.world.keyboard.space || this.world.keyboard.throw || this.isAboveGround()) {
-                this.idleTime = new Date().getTime();
-            }
-            console.log(this.x);
-        }, 1000 / 60);
-
-        setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.imagesDead);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.imagesHurt);
-                this.world.statusbarHealth.setPercentage(this.energy);
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.imagesJumping);
-            } else if (this.world.keyboard.right || this.world.keyboard.left) {
-                this.playAnimation(this.imagesWalking);
-            } else if (this.world.keyboard.space) {
-                this.playAnimation(this.imagesJumping);
-            } else if (this.isLongIdle(this.idleTime)) {
-                this.playAnimation(this.imagesLongIdle);
-            } else {
-                this.playAnimation(this.imagesIdle);
-            }
-
-        }, 100);
+    update(intervalTime) {
+        this.handleMovement();
+        super.update?.(intervalTime);
+        this.animate(intervalTime);
     }
 
+    handleMovement() {
+        if (!this.world?.keyboard) return;
+        this.speedX = 0;
 
+        // Bewegung nur bei Tastendruck
+        if (this.world.keyboard.right && this.x + this.width < this.world.level.level_end_x) {
+            this.speedX = this.standardSpeedX;
+            this.speedX = 0;
+            this.otherDirection = false;
+        } else if (this.world.keyboard.left && this.x > 0) {
+            this.speedX = -this.standardSpeedX;
+            this.speedX = 0;
+            this.otherDirection = true;
+        }
+
+        if (this.world.keyboard.space && !this.isAboveGround()) {
+            this.jump();
+        }
+
+        // Throw-Action
+        if (this.world.keyboard.throw && this.bottles > 0 && Date.now() - this.lastThrowTime > 500) {
+            this.lastThrowTime = Date.now();
+            this.bottles--;
+            this.world.statusbarBottle?.setPercentage(this.bottles);
+
+            let bottle = new ThrowableObject();
+            bottle.world = this.world;
+            let startX = this.otherDirection ? this.x - 20 : this.x + 50;
+            let startY = this.y + 50;
+            bottle.throw(startX, startY);
+            this.world.flyingSalsaBottle.push(bottle);
+        }
+
+        // Kamera
+        this.world.camera_x = -this.x + 100;
+
+        // Idle-Timer zurücksetzen
+        if (this.world.keyboard.right || this.world.keyboard.left || this.world.keyboard.space || this.world.keyboard.throw || this.isAboveGround()) {
+            this.idleTime = Date.now();
+        }
+    }
+
+    animate(intervalTime) {
+        this.animationTimer += intervalTime;
+        if (this.animationTimer < 120) return;
+
+        if (this.isDead()) this.playAnimation(this.imagesDead);
+        else if (this.isHurt()) this.playAnimation(this.imagesHurt);
+        else if (this.isAboveGround()) this.playAnimation(this.imagesJumping);
+        else if (this.speedX !== 0) this.playAnimation(this.imagesWalking);
+        else if (this.isLongIdle(this.idleTime)) this.playAnimation(this.imagesLongIdle);
+        else this.playAnimation(this.imagesIdle);
+
+        this.animationTimer = 0;
+    }
+
+    hit() {
+        const now = Date.now();
+        // nur 1 Treffer pro Sekunde
+        if (now - this.lastHit > 500) {
+            this.energy = Math.max(0, this.energy - 5);
+            this.lastHit = now;
+        }
+    }
 }
